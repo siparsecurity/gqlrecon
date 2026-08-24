@@ -28,4 +28,22 @@ environment on that version instead of system Python.
 
 ### Status
 
-In progress. Python 3.11 build via pyenv underway.
+Resolved. Python 3.11.16 installed via pyenv, DVGA venv rebuilt against it,
+original unmodified requirements.txt installed successfully (gevent and
+greenlet compiled cleanly).
+
+### Stage 1 validation result
+
+Command:
+
+    python3 stage1_discovery.py --url http://localhost:5013/graphql
+
+Result: introspection enabled, schema successfully parsed.
+
+- 12 queries discovered
+- 7 mutations discovered
+- 29 total types discovered
+- Field arguments correctly extracted, including sensitive looking fields
+  such as systemDiagnostics(username, password, cmd)
+
+Stage 1 is confirmed working against a real GraphQL target.

@@ -3,3 +3,4 @@ __pycache__/
 output/*.json
 .venv/
 *.egg-info/
+output/stage1_dvga_test.json
