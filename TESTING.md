@@ -67,3 +67,31 @@ to __typename as the alias probe field since it is always safe and
 lightweight regardless of what Stage 1 picked as the general probe field.
 
 Stage 2 is confirmed working against a real GraphQL target.
+
+## Stage 3 validation: Depth and Complexity Fuzzing
+
+Command:
+
+    python3 stage3_depth.py --url http://localhost:5013/graphql
+
+Result against DVGA:
+
+- Self referencing cycle found: pastes -> owner -> paste -> owner -> ...
+- Depth 5: accepted, 0.05s
+- Depth 10: accepted, 0.22s
+- Depth 20: accepted, 6.78s
+- Depth 35: TIMEOUT after 10s
+
+DVGA enforces no depth or complexity limit. Response time grows sharply
+with nesting depth, confirming a genuine resource exhaustion risk.
+
+Note: an earlier run reported a false "depth limit enforced" result caused
+by a bug in query construction (field ordering flipped depending on odd or
+even depth, which produced an invalid query at depth 10, not a real
+rejection). Fixed by building the field sequence outer to inner before
+nesting, so the outermost field is always consistent regardless of depth.
+Stage 3 now also distinguishes genuine depth/complexity rejections from
+unrelated schema errors.
+
+Stage 3 is confirmed working and produced a real, meaningful finding
+against a live GraphQL target.
