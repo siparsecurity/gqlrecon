@@ -95,3 +95,32 @@ unrelated schema errors.
 
 Stage 3 is confirmed working and produced a real, meaningful finding
 against a live GraphQL target.
+
+## Stage 4 validation: Field Level Authorization Testing
+
+Command:
+
+    python3 stage4_auth.py --url http://localhost:5013/graphql --schema ../output/stage1_dvga_test.json
+
+Result against DVGA:
+
+- systemDiagnostics: requires arguments (username, password, cmd), could
+  not be fully assessed without valid input values
+- systemDebug: CONFIRMED broken access control. Unauthenticated request
+  with no arguments returned live command output (ps process listing)
+  directly from the server. This is DVGA's known command execution
+  vulnerability, exposed with zero authentication.
+
+Two bugs were found and fixed in Stage 4 during this test:
+
+1. Connection refused errors were initially caused by DVGA not running,
+   not a tool bug, resolved by restarting DVGA.
+2. Probe queries originally assumed every field returns an object type
+   and always added a { __typename } sub-selection. Scalar returning
+   fields like systemDebug and systemDiagnostics rejected this with a
+   "must not have a sub selection" error. Fixed by trying a bare leaf
+   query first and only retrying with a sub-selection if the server
+   specifically reports one is required.
+
+Stage 4 is confirmed working and produced a real, high severity finding
+against a live GraphQL target.
