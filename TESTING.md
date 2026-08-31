@@ -124,3 +124,41 @@ Two bugs were found and fixed in Stage 4 during this test:
 
 Stage 4 is confirmed working and produced a real, high severity finding
 against a live GraphQL target.
+
+## Stage 5 validation: Risk Scoring and Report Generation
+
+Command:
+
+    python3 stage5_report.py --stage1 ../output/stage1_dvga_test.json \
+                              --stage2 ../output/stage2_dvga_test.json \
+                              --stage3 ../output/stage3_dvga_test.json \
+                              --stage4 ../output/stage4_dvga_test.json \
+                              --output ../output/gqlrecon_report.html
+
+Result against DVGA's real Stage 1-4 output:
+
+- Overall risk: CRITICAL
+- 5 findings aggregated and correctly sorted by severity
+- 1 CRITICAL (unauthenticated command execution via systemDebug)
+- 1 HIGH (no query depth limit enforced, real timeout observed)
+- 2 MEDIUM (batching and alias abuse both accepted with no limit)
+- 1 LOW (introspection enabled)
+- Self contained HTML report generated, styled to match Sipar Security's
+  site design
+
+Stage 5 is confirmed working end to end against real findings from all
+four prior stages.
+
+## GQLRecon: feature complete
+
+All 5 stages are built and validated against a live target (DVGA):
+
+1. Schema discovery via introspection, with wordlist fallback
+2. Batching and alias abuse testing
+3. Depth and complexity fuzzing
+4. Field level authorization testing
+5. Risk scoring and HTML report generation
+
+Real findings produced during validation include unauthenticated command
+execution, unenforced query depth limits, and unrestricted batching and
+alias abuse, all against DVGA's known vulnerabilities.
